@@ -1,0 +1,76 @@
+# ==============================================================================
+# Indonesia Law — Docker Ignore (.dockerignore)
+# ==============================================================================
+
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+*.pfx
+*.p12
+*.secret
+*.token
+credentials.json
+auth.json
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation & Plans (keep images minimal)
+plans/
+docs/
+
+# AI Agent metadata & transcripts
+.agents/
+.gemini/
+.claude/
+.cursor/
+scratch/
+brain/
+*.transcript.jsonl
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node & Frontend dependencies and caches
+**/node_modules
+**/.pnpm-store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Database & local volume storage
+pgdata/
+redisdata/
+miniodata/
+*.sqlite
+*.sqlite3
+*.dump
+downloads/
+raw_pdfs/
+
+# OS and Editor artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+

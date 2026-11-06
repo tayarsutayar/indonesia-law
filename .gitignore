@@ -1,0 +1,187 @@
+# ==============================================================================
+# Indonesia Law — Git Ignore Configuration
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Environment & Secrets (CRITICAL - Never commit credentials or keys)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.env
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+
+# API keys, tokens, certificates, and credentials
+*.key
+*.pem
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+*.der
+id_rsa
+id_rsa*
+id_ed25519
+id_ed25519*
+*.pub
+!scripts/**/*.pub
+secrets/
+*.secret
+*.token
+*bearer*
+credentials.json
+auth.json
+service-account*.json
+client_secrets*.json
+jwt_secret*
+
+# ------------------------------------------------------------------------------
+# 2. AI Agents, Vibe Coding, & Local Assistant Scratchpads
+# ------------------------------------------------------------------------------
+.gemini/
+.claude/
+.cursor/
+.cursorrules.local
+.continue/
+.copilot/
+scratch/
+brain/
+*transcript*.jsonl
+*.chat
+*.prompt.dev
+
+# ------------------------------------------------------------------------------
+# 3. Python, Virtual Environments & Package Managers
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.pyenv/
+
+# Python test, lint, and type check caches
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+
+# uv / pip-tools cache
+.uv/
+
+# ------------------------------------------------------------------------------
+# 4. Node.js & Frontend (React / Vite)
+# ------------------------------------------------------------------------------
+node_modules/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Production frontend builds
+dist/
+dist-ssr/
+out/
+.turbo/
+.next/
+
+# ------------------------------------------------------------------------------
+# 5. Database, Redis, MinIO & Local Storage Volumes
+# ------------------------------------------------------------------------------
+pgdata/
+redisdata/
+miniodata/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.gz
+*.rdb
+
+# Raw downloaded PDFs & temp scraping artifacts
+downloads/
+raw_pdfs/
+scraped_data/
+tmp/
+temp/
+
+# ------------------------------------------------------------------------------
+# 6. Logs & Observability
+# ------------------------------------------------------------------------------
+*.log
+logs/
+*.log.*
+celerybeat-schedule
+celerybeat.pid
+
+# ------------------------------------------------------------------------------
+# 7. Operating System & Editor Files
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# IDEs
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.vscode/*.local
+

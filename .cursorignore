@@ -1,0 +1,20 @@
+# Cursor & AI agent context exclusion
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.secret
+*.token
+credentials.json
+auth.json
+pgdata/
+redisdata/
+miniodata/
+*.dump
+*.sql
+node_modules/
+.venv/
+__pycache__/
+.git/
+
