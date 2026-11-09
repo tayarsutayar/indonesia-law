@@ -14,15 +14,15 @@ Before any frontend work, read every `SKILL.md` in `.agents/skills/` (currently 
 
 | Route | Page | Key content |
 |---|---|---|
-| `/` | Home | Search hero, coverage summary, latest published, open review count |
-| `/cari` | Search | Query + filters (jenis, tahun, status, instansi, date T); results grouped as works and provisions; highlights by offset |
-| `/peraturan` | Regulation list | Virtualized table: jenis, nomor, tahun, judul, status aturan, pipeline stage, coverage badges |
-| `/peraturan/:id` | Work detail (viewer) | Three synced panels + timeline slider (§3); tabs: Relasi, Log Dokumen, QC |
-| `/peraturan/:id/bandingkan` | Compare | Two versions or two instruments side by side, word diff |
+| `/` | Home | Search hero, coverage summary by historical era, latest published, open review count |
+| `/cari` | Search | Query + filters (era, jenis, tahun, norm_character, status, instansi, date T); results grouped as works and provisions; highlights by offset |
+| `/peraturan` | Regulation list | Virtualized table: era, jenis, nomor, tahun, judul, norm_character (regeling/beschikking), status aturan, pipeline stage, coverage badges |
+| `/peraturan/:id` | Work detail (viewer) | Three synced panels + timeline slider (§3); tabs: Relasi, Log Dokumen, QC, Hierarki Historis |
+| `/peraturan/:id/bandingkan` | Compare | Two versions or two instruments side by side (e.g. WvS 1918 vs KUHP 2023), word diff |
 | `/tinjauan` | Review queue | Filters by reason, age, stage; claim; keyboard flow (§4) |
 | `/tinjauan/:id` | Review item | Evidence workspace + decision form |
 | `/kantor` | Office | PixiJS scene + "Tabel" mode (accessible equivalent) |
-| `/dasbor/*` | Dashboard | Run, Coverage (1945–present historical grid), Tokens & Cost, Swarm, Quality, Scraping, Versioning |
+| `/dasbor/*` | Dashboard | Run, Coverage (multi-era historical grid: Pra-Kemerdekaan through Reformasi), Tokens & Cost, Swarm, Quality, Scraping, Versioning |
 | `/log` | Log explorer | Events, tasks, LLM call inspector, per-document trace |
 | `/kendali` | Control panel | Manual-run wizard, auto mode, swarm sizes, budgets |
 | `/kendali/evolusi` | Prompt & Skill Evolution | Dynamic Skill Bank, candidate prompt diffs, golden-set benchmarks, one-click promotion/rollback |
@@ -38,18 +38,21 @@ Before any frontend work, read every `SKILL.md` in `.agents/skills/` (currently 
 ```
 
 - **PDF panel:** lazy page render, highlight of the selected node's lines via `page_map`, manifestation selector (shows source website domain, clickable original source URL, `.go.id` verification badge, and fetch timestamp).
-- **Parsing panel:** virtualized collapsible tree (Bab → … → Butir); click → PDF highlight; text shown verbatim in a reading column (max ~72ch); "Teks sumber mentah" tab with line IDs in monospace; "Laporkan kesalahan" creates a review item.
-  - **"Hukum Blame" Gutter (Git Blame Mode):** Toggleable provenance gutter beside each provision. Displays the authoring enactment tag (e.g. `[UU 16/2019]` or `[MK 91/2020]`), effective date, and author badge. Clicking any blame pill opens the commit inspection popover detailing the exact amendment op, evidence line range, and diff.
-  - **Court Annotation Badges:** For provisions altered or conditionally interpreted by Mahkamah Konstitusi (MK) or Mahkamah Agung (MA), displays an accessible callout badge (e.g. "⚠ Inkonstitusional Bersyarat — Putusan MK No. 91/PUU-XVIII/2020") rendering the court's verbatim operative holding (*amar putusan*).
+  - **Dual-Manifestation Toggle:** For pre-1945 colonial codes (BW, WvK, HIR, RBg, Rv, AB), provides a clean toggle between *Naskah Otentik Staatsblad (Bahasa Belanda)* and *Naskah Kerja Yurisprudensi (Terjemahan Standar Peradilan oleh Subekti/Tirtodiningrat)* with explicit translator provenance badge.
+- **Parsing panel:** virtualized collapsible tree (Bab/Pasal for modern laws; Boek/Titel/Afdeling/Lid for classical codes; Penjelasan Resmi for UUD 1945 pra-amandemen); click → PDF highlight; text shown verbatim in a reading column (max ~72ch); "Teks sumber mentah" tab with line IDs in monospace; "Laporkan kesalahan" creates a review item.
+  - **"Hukum Blame" Gutter (Git Blame Mode):** Toggleable provenance gutter beside each provision. Displays the authoring enactment tag (e.g. `[UU 16/2019]`, `[UU 5/1960 UUPA]`, or `[MK 91/2020]`), effective date, and author badge. Clicking any blame pill opens the commit inspection popover detailing the exact amendment op, evidence line range, and diff.
+  - **Court Annotation & Scope Derogation Badges:** Displays accessible callouts for:
+    1. Judicial hotfixes: e.g. "⚠ Inkonstitusional Bersyarat — Putusan MK No. 91/PUU-XVIII/2020" with the court's verbatim operative holding.
+    2. Subject-matter scope derogations: e.g. "⚡ Dicabut Sebagian Secara Materiil — UU No. 5/1960 (UUPA) mengenai tanah, bumi, dan air".
 - **Changes panel:** instrument timeline, `node_version` list (valid_from–valid_to, change type, causing instrument + evidence link), visual diff inspector.
   - **Visual Diff Engine:** Side-by-side and unified inline diff comparing any two historical dates ($T_1$ vs $T_2$) or amending instruments. Insertions highlighted with subtle accessible green tint + `+` tag; deletions displayed with strikethrough + `-` tag; word-level changes highlighted cleanly without breaking verbatim spacing.
   - **Omnibus Batch Inspector:** If an op was introduced by an Omnibus instrument (e.g. UU Cipta Kerja), displays a batch tag linking to all other laws amended within the same legislative cluster.
-- **Date T:** whole tree shows state as of T; revoked = struck through **and** labelled "Dicabut"; inserted = labelled "Disisipkan"; the selected T is always shown as text.
+- **Date T:** whole tree shows state as of T; revoked = struck through **and** labelled "Dicabut"; inserted = labelled "Disisipkan"; scope-derogated = labelled "Dicabut Materiil"; the selected T is always shown as text alongside the **active constitutional hierarchy badge** (e.g. "Hierarki: Tap MPRS XX/1966").
 - Responsive: ≥1069px three panels; 834–1068px two panels + tab for the third; <834px one panel with segmented control.
 
 ## 4. Review Flows
 
-Review reasons: `verbatim_failed`, `ocr_mismatch`, `uncertain_boundary`, `unresolved_reference`, `relation_needs_review`, `amendment_uncertain`, `missing_effective_date`, `qc_conflict`, `user_flag`.
+Review reasons: `verbatim_failed`, `ocr_mismatch`, `uncertain_boundary`, `unresolved_reference`, `relation_needs_review`, `amendment_uncertain`, `scope_derogation_uncertain`, `keppres_character_uncertain`, `missing_effective_date`, `qc_conflict`, `user_flag`.
 
 Workspace layout for every reason: **evidence left** (PDF page + source lines), **proposal right** (what the agent produced, its `uncertain_reason`, QC findings), **decision bar bottom**.
 

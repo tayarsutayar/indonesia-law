@@ -14,14 +14,14 @@
 | Group | Endpoints |
 |---|---|
 | Health | `GET /api/health` (per dependency) |
-| Search | `GET /api/search?q=&jenis=&tahun=&status=&scope=works|nodes&at=` (metadata + full text, highlights offsets, never altered text) |
-| Works | `GET /api/works`, `GET /api/works/{id}`, `GET /api/works/{id}/pdf?manifestation=`, `GET /api/works/{id}/status`, `GET /api/works/{id}/source-text` |
+| Search | `GET /api/search?q=&jenis=&tahun=&era=&status=&norm_character=&scope=works|nodes&at=` (metadata + full text, highlights offsets, never altered text) |
+| Works | `GET /api/works?era=&jenis=`, `GET /api/works/{id}`, `GET /api/works/{id}/pdf?manifestation=`, `GET /api/works/{id}/status`, `GET /api/works/{id}/source-text`, `GET /api/works/{id}/hierarchy?at=YYYY-MM-DD` |
 | Nodes | `GET /api/works/{id}/tree?at=YYYY-MM-DD`, `GET /api/nodes/{node_id}`, `GET /api/nodes/{node_id}/history` |
 | Versions & Git VCS | `GET /api/works/{id}/versions`, `GET /api/works/{id}/diff?from=&to=&mode=inline|side_by_side`, `GET /api/works/{id}/blame?at=YYYY-MM-DD`, `GET /api/works/{id}/consolidated?at=YYYY-MM-DD`, `GET /api/works/{id}/export/git` (Git bundle format), `GET /api/works/{id}/export/markdown?at=YYYY-MM-DD` |
 | Relations | `GET /api/works/{id}/relations`, `GET /api/graph?center=&depth=&types=` |
 | Review | `GET /api/review-queue?reason=&status=&age=`, `GET /api/review/{id}`, `POST /api/review/{id}/claim`, `POST /api/review/{id}/decisions` |
 | Control | `POST /api/runs` (scope), `POST /api/runs/{id}/estimate`, `POST /api/runs/{id}/start|pause|resume|stop`, `POST /api/runs/{id}/retry-failed`, `POST /api/works/{id}/rerun?stage=`, `GET|PUT /api/auto-mode`, `GET|PUT /api/swarms/{category}`, `POST /api/uploads` (single PDF/URL) |
-| Observability | `GET /api/logs`, `GET /api/works/{id}/trace`, `GET /api/llm-calls`, `GET /api/llm-calls/{id}` (request/response), `GET /api/metrics/{summary|coverage|tokens|swarm|quality|scraping|versioning}?group_by=&from=&to=`, `GET /api/export/{tokens|logs}.csv` |
+| Observability | `GET /api/logs`, `GET /api/works/{id}/trace`, `GET /api/llm-calls`, `GET /api/llm-calls/{id}` (request/response), `GET /api/metrics/{summary|coverage|tokens|swarm|quality|scraping|versioning}?group_by=&from=&to=&era=`, `GET /api/export/{tokens|logs}.csv` |
 | Agents | `GET /api/agents` (instances + state, for the office "no animation" table) |
 | Realtime | `WS /ws/events` |
 

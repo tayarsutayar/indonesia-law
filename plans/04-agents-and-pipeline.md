@@ -44,6 +44,8 @@ class BaseAgent:
 **Scout (Web & Catalog).** Scans and ingests regulatory listings from **across the entire internet** — not confined to official portals alone, but ingesting university legal repositories (`.ac.id`), archival collections, legal research portals, and digital document hubs. Per-source adapters (`scraping/adapters/<source>.py`) or generic HTML/feed extractors harvest listings.
 - **Priority & Tiering:** Tasks targeting `.go.id` domains are given highest queue scheduling priority.
 - **Corpus Integrity:** Any web source can discover a `work` or register a new `manifestation`. If a regulation is found on a non-`.go.id` site, it is ingested, and a high-priority background probe is simultaneously queued to verify whether an official `.go.id` canonical manifestation exists.
+- **Historical Era Coverage:** Systematically catalogues foundational pre-1945 colonial codes (Staatsblad), Awal Kemerdekaan & Revolusi (Maklumat Wapres/Pemerintah, Penpres), RIS 1949–1950 (UU Federal, LN RIS), Demokrasi Liberal (UUDS 1950, UU Darurat), Orde Lama (Tap MPRS, Penpres/PNPS), Orde Baru (Tap MPRS XX/1966), and Reformasi.
+- **Pre-2004 Keppres Classifier:** Historical Keputusan Presiden (1966–2004) are classified to separate regulatory instruments (*regeling*, general/abstract norms) from administrative appointments (*beschikking*, individual/concrete/final decisions), ensuring only true regulatory acts proceed down the provision-splitting pipeline.
 
 **Search Hunter.** Formulates open-web search queries (via SearXNG, search APIs, or Common Crawl indexes) to discover regulations and archival PDFs anywhere on the web. Search result ranking algorithm explicitly biases toward `.go.id` top-level domains while indexing all valid PDF documents found across institutional and public repositories.
 
@@ -56,14 +58,18 @@ class BaseAgent:
   3. Trusted institutional archives (`.ac.id`, National Library / Perpusnas).
   4. General internet legal repositories and archives (used as fallback or when no `.go.id` manifestation is available online).
   Configurable via policy table. Every manifestation explicitly flags `is_gov_domain (boolean)`.
+- **Dual-Manifestation for Colonial Codes:** For pre-1945 *Staatsblad* codes (BW, WvK, HIR, RBg, Rv, AB), Fetcher acquires both the authentic Dutch gazette scan (`official_original`) and verified standard doctrinal Indonesian translations used in court jurisprudence (`doctrinal_translation`, e.g. Subekti/Tjitrosudibio or Tirtodiningrat).
 
-**Extractor.** Native PDF: per-page text + `page ↔ line range` map. Scanned PDF (typewritten sheets from 1945–1970s, low density, carbon copies): render pages → vision transcription in **two independent passes** → compare; disagreement → `review_item` (`ocr_mismatch`), never auto-approved. Handles historical Indonesian spelling (Van Ophuijsen, Suwandi/Soewandi) while preserving verbatim authenticity. Output: `source_text` with line IDs `L0001…`, raw version kept untouched.
+**Extractor.** Native PDF: per-page text + `page ↔ line range` map. Scanned PDF (typewritten sheets from 1945–1970s, low density, carbon copies, Dutch Staatsblad scans): render pages → vision transcription in **two independent passes** → compare; disagreement → `review_item` (`ocr_mismatch`), never auto-approved. Handles historical Indonesian spelling (Van Ophuijsen, Suwandi/Soewandi) and historical Dutch legal vocabulary while preserving verbatim authenticity. Output: `source_text` with line IDs `L0001…`, raw version kept untouched.
 
 **Reflection & Optimizer Agent.** Asynchronous learning loop worker. Listens to `review_decision` outcomes, QC rejections, and novel drafting patterns. Performs automated Root Cause Analysis (RCA), curates micro-skills into the `skill_bank`, formulates candidate prompt patches (`@vN+1`), and triggers automated golden-set regression testing before suggesting promotion.
 
 **Splitter (most important).** Hierarchy is decided by the LLM per instrument type, not hard-coded.
-1. Pass 1 — skeleton (Bab/Bagian/Pasal/Diktum/Lampiran) with line pointers; long documents use windows with overlap.
-2. Pass 2 — deep split per Pasal/Lampiran (parallel; one document = one "head" + many workers).
+1. Pass 1 — skeleton with line pointers; long documents use windows with overlap.
+   - *Modern Acts:* Bab / Bagian / Paragraf / Pasal / Diktum / Lampiran.
+   - *Classical Codes (BW, WvK, HIR):* Boek (Buku) $\rightarrow$ Titel (Bab) $\rightarrow$ Afdeling (Bagian) $\rightarrow$ Artikel (Pasal) $\rightarrow$ Alinea/Lid (un-numbered paragraphs).
+   - *Constitutional Texts:* UUD 1945 Pra-Amandemen splits Pembukaan, Batang Tubuh, Aturan Peralihan, Aturan Tambahan, and Penjelasan Resmi.
+2. Pass 2 — deep split per Pasal/Artikel/Lampiran (parallel; one document = one "head" + many workers).
 3. Pass 3 — merge + numbering continuity check (e.g., Pasal 5 → 6 → 6A → 7; "dihapus" allowed).
 4. Slice text from `source_text` by pointers → Verbatim Verifier → retry with `split_retry@v1` (max 3) → review queue.
 
@@ -71,21 +77,24 @@ class BaseAgent:
 
 **Amendment Analyzer.** Converts instructions and court rulings into atomic `amendment_op` records:
 - **Standard Indonesian Legislative Formula:** Parses formulas mandated by UU 12/2011 (*diubah sehingga berbunyi...*, *di antara Pasal X dan Y disisipkan Pasal XA*, *ketentuan Pasal Z dihapus*, *dicabut dan dinyatakan tidak berlaku*). Links `target_path` to `new_content_node_id` (a verbatim node from the amending instrument).
+- **Subject-Matter Scope Derogation Engine (*Dekodifikasi Parsial Materiil*):** Parses blanket, domain-based repeal formulas common in historical statutes (e.g., UU 5/1960 UUPA repealing Buku II BW regarding land except hypothec; UU 1/1974 repealing Buku I BW regarding marriage; UU 4/1996 Hak Tanggungan; SEMA 3/1963). Emits `amendment_op` with `op='scope_derogation'`, recording `derogation_subject`, `scope_clause`, and `exception_clause`, linking to target work/node ranges without needing artificial individual article deletes.
 - **Constitutional Court (MK) & Supreme Court (MA) Judicial Review Engine:** Treats final and binding court rulings (*Putusan MK/MA*) as external judicial commits/hotfixes:
   1. *Pembatalan Penuh:* Provision annulled (`annulled_by_court`).
   2. *Pembatalan Sebagian/Frasa:* Nullifies specific words or sentences while retaining the remaining provision, generating a `phrase_mask` on the node version.
   3. *Inkonstitusional/Konstitusional Bersyarat:* The text remains intact but is annotated with the mandatory interpretation formula from the court's operative holding (*amar putusan*), categorized as `conditionally_unconstitutional`.
 - **Omnibus Law Multi-Target Decomposition:** Deconstructs complex omnibus instruments (e.g. UU Cipta Kerja, UU P2SK, UU Kesehatan) which amend dozens of distinct laws simultaneously. Emits independent, atomic `amendment_op` batches grouped by target `work_id` so target documents can be versioned in parallel.
+- **KUHP 2026 Penal Transition Engine:** Accommodates the decolonization milestone of 2 January 2026 when UU 1/2023 replaces WvS (1918–2026). In accordance with *lex temporis delicti* and *lex favor reo* (Pasal 3 UU 1/2023), tracks transitional applicability for offences committed before 2 January 2026 and provides cross-provision correlation between WvS articles and KUHP 2023 articles.
 - **Effective Date & Transition Clauses:** Scans closing and transitional provisions (*Ketentuan Penutup* & *Ketentuan Peralihan*) to identify non-immediate effective dates (e.g., "berlaku 2 tahun sejak tanggal diundangkan", retroactive dates, or phased schedules where specific chapters take effect on future dates). Computes accurate `valid_from` for each op.
 
 **Version Builder.** Replays amendment and court operations in strict chronological order (ordered by: effective date → promulgation date → instrument number → court decision date). Invariant: no overlapping temporal validity per `node_key` (enforced by DB `EXCLUDE USING gist` constraint).
-- Resolves conflicts, renumbering (`node_version.renumbered_from`), and transitional periods.
-- Reconstructs full **"Hukum Blame"** metadata: maps each provision, paragraph, and phrase to the exact enactment or court decision that introduced or modified it.
+- Resolves conflicts, renumbering (`node_version.renumbered_from`), scope derogations, and transitional periods.
+- Reconstructs full **"Hukum Blame"** metadata: maps each provision, paragraph, and phrase to the exact enactment or court decision that introduced, modified, or scope-derogated it.
 - Ambiguity (renumbering, unclear target, missing date) → `version_resolve@v1`; still uncertain → review.
 
 **Compiler.** Point-in-time time-travel engine (equivalent to `git checkout <date>`).
-- Builds the complete provision tree valid as of date T (`valid_from ≤ T < valid_to`).
-- Resolves phrase masks and conditional court annotations for accurate legal display at date T.
+- Evaluates the valid provision tree as of date T (`valid_from ≤ T < valid_to`).
+- Dynamically resolves normative hierarchy based on `legal_hierarchy_era` active at date T (e.g., assessing Perppu under Tap MPR III/2000 vs UU 12/2011; Penpres under Demokrasi Terpimpin).
+- Overlays subject-matter scope derogations and court annotations for accurate legal display at date T.
 - Computes structural and textual diffs between any two dates ($T_1$ vs $T_2$) or between any two amending works.
 - Caches compiled snapshots keyed by `built_from_hash`.
 

@@ -92,16 +92,23 @@ indonesia-law/
 
 ## 4. Pipelines
 
-**Document pipeline (LangGraph):** Discovered → Fetch → Extract (+ line numbers & historic spelling check) → Splitter (pointers) → Slice → Verbatim Verifier (fail → retry with feedback; fail N times → Review) → Node QC → Relation → Amendment Analyzer → Version Builder → Compiler → Version QC + Relation QC → Display QC → Chief QC → Published / returned to the responsible stage.
+**Document pipeline (LangGraph):** Discovered → Fetch → Extract (+ line numbers & historic spelling / Dutch gazette check) → Splitter (pointers, modern + classical Boek/Lid support) → Slice → Verbatim Verifier (fail → retry with feedback; fail N times → Review) → Node QC → Relation → Amendment Analyzer (including Omnibus decomposition, MK/MA hotfixes, and Subject-Matter Scope Derogations) → Version Builder → Compiler (point-in-time evaluated against active `legal_hierarchy_era`) → Version QC + Relation QC → Display QC → Chief QC → Published / returned to the responsible stage.
 
 Document status: `discovered → fetched → extracted → split → verified → related → versioned → compiled → qc_passed → published` (+ `needs_review`, `failed`, `paused`). Every transition = event + checkpoint.
 
 **Discovery Swarm pipeline:**
-1. *Chronological Master Registry:* Seeds expected series (LNRI/BNRI, UU, Perppu, PP, Perpres, Penpres 1945–present).
+1. *Chronological Master Registry:* Seeds expected publication series across all Indonesian legal eras:
+   - *Pra-Kemerdekaan / Adopsi Transisional:* Foundational colonial codes (*Staatsblad*) active via Pasal II Aturan Peralihan UUD 1945 (BW, WvK, HIR, RBg, Rv, AB, Ordonnantie).
+   - *Awal Kemerdekaan & Revolusi (1945–1949):* Maklumat Wapres No. X, Maklumat Pemerintah, UU, Perppu, PP, Penpres Darurat.
+   - *RIS & UUDS 1950 (1949–1959):* Konstitusi RIS 1949, UU Federal RIS, LN RIS, UUDS 1950, UU Darurat (UU Drt).
+   - *Demokrasi Terpimpin / Orde Lama (1959–1966):* Tap MPRS, Penetapan Presiden (Penpres / PNPS), Perpres Orla.
+   - *Orde Baru (1966–1998):* Tap MPRS XX/1966, UU No. 5/1969, LNRI/BNRI, Keppres (with *regeling* vs *beschikking* filter).
+   - *Reformasi (1998–present):* UUD NRI 1945, LNRI, TLN, BNRI, Tap MPR, UU, Perppu, PP, Perpres, Putusan MK/MA, Qanun Aceh, Perdasus/Perdasi Papua.
 2. *Open Web & Catalog Scouts:* Gathers regulatory listings and document URLs from across the open web (academic repositories, legal portals, digital libraries), prioritizing official `.go.id` adapters (BPK JDIH, JDIHN, Setneg/Setkab, Peraturan.go.id, MKRI/MARI).
 3. *Web Search Hunters:* Uses search engine queries (e.g. via SearXNG / search APIs) to discover unindexed or missing historical PDFs across all web domains, with search result ranking biased toward `.go.id`.
-4. *Heritage / Citation Scouts:* When relations cite an older instrument not yet in the DB (e.g. a 1950s emergency law cited in a 1970s law), a targeted open-web discovery task is queued.
-5. *Deduplication & Canonical Rule:* Identifies works across manifestations (`jenis|nomor|tahun|instansi`), prioritizes official `.go.id` gazette scans, and schedules fetches.
+4. *Heritage / Citation Scouts:* When relations cite an older instrument not yet in the DB (e.g. an Ordonnantie, Penpres, or 1950s emergency law), a targeted open-web discovery task is queued.
+5. *Deduplication & Canonical Rule:* Identifies works across manifestations (`jenis|nomor|tahun|instansi` or `staatsblad|tahun|nomor`), prioritizes official `.go.id` gazette scans, and schedules fetches. Supports *Dual-Manifestation* pairing Dutch original gazettes with verified doctrinal translations.
+6. *Pre-2004 Keppres Classifier:* Evaluates historical Keputusan Presiden (1966–2004) to differentiate legislative/regulatory norms (*regeling*) from purely administrative individual appointments (*beschikking*), routing only regulatory acts to the parsing pipeline.
 
 **Prompt & Skill Evolution pipeline:**
 Triggered continuously by human review decisions (`review_decision`), QC rejections, and novel document styles:

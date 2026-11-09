@@ -18,36 +18,20 @@ undangan) and decisions of the Republic of Indonesia and its regional
 governments, scraped from official Indonesian legal databases (for example
 JDIH, peraturan.go.id, BPK, ministry sites).
 
-Instrument types you will meet include, in the normal hierarchy: Undang-Undang
-Dasar Negara Republik Indonesia Tahun 1945 (UUD 1945); Ketetapan MPR (TAP MPR);
-Undang-Undang (UU) and Peraturan Pemerintah Pengganti Undang-Undang (Perppu);
-Peraturan Pemerintah (PP); Peraturan Presiden (Perpres); Peraturan Daerah
-Provinsi and Kabupaten/Kota (Perda); and other regulations and decisions such
-as Peraturan Menteri (Permen), Peraturan Menteri Keuangan (PMK), Keputusan
-Menteri (e.g., KMK), Keputusan Presiden (Keppres), Instruksi, Surat Edaran, and
-court decisions that affect norms (e.g., Putusan Mahkamah Konstitusi).
+Instrument types you will meet include:
+- Historical pre-independence colonial codes still in force or cited under Transitional Provisions (Staatsblad: Burgerlijk Wetboek/BW/KUHPerdata, Wetboek van Koophandel/WvK/KUHD, HIR, RBg, Rv, AB, and Ordonnantie);
+- Regulations from past constitutional eras: Maklumat Wakil Presiden No. X & Maklumat Pemerintah 1945, Konstitusi RIS 1949 & UU Federal, UUDS 1950 & Undang-Undang Darurat (UU Drt), Penetapan Presiden (Penpres / PNPS) & Perpres Orde Lama, Ketetapan MPRS (Tap MPRS);
+- Asymmetric regional autonomy regulations: Qanun Aceh, Perdasus/Perdasi Papua, Perdais DIY;
+- Modern hierarchy instruments: Undang-Undang Dasar Negara Republik Indonesia Tahun 1945 (UUD 1945); Ketetapan MPR (TAP MPR); Undang-Undang (UU) and Peraturan Pemerintah Pengganti Undang-Undang (Perppu); Peraturan Pemerintah (PP); Peraturan Presiden (Perpres); Peraturan Daerah Provinsi and Kabupaten/Kota (Perda); and other regulations and decisions such as Peraturan Menteri (Permen), Peraturan Menteri Keuangan (PMK), Keputusan Menteri (e.g., KMK), Keputusan Presiden (Keppres), Instruksi, Surat Edaran, agency regulations (POJK, PBI, Perma, PMK), and court decisions that affect norms (e.g., Putusan Mahkamah Konstitusi and Putusan Mahkamah Agung).
 
 LANGUAGE AND CONVENTIONS
-- The text is in Bahasa Indonesia (formal legal register). Some older
-  documents use older spelling (e.g., "dipergunakan", "oentoek") and
-  occasionally Dutch-era terms. Preserve all of it exactly.
-- Indonesian legislative drafting structure, from top to bottom: title
-  (judul); preamble: Menimbang, Mengingat, (Memperhatikan), Memutuskan /
-  Menetapkan; body: Buku, Bab (Roman numerals), Bagian, Paragraf, Pasal
-  (Arabic numerals, may include suffix letters such as "Pasal 6A"), Ayat
-  (numbers in parentheses, e.g., "(2)"), Huruf (a., b., c.), Angka (1., 2.,
-  3.), Butir; closing provisions: Ketentuan Peralihan, Ketentuan Penutup;
-  Penjelasan (Umum and "Pasal demi Pasal"); Lampiran (annexes: tables, forms,
-  matrices).
-- Amendments use stock phrases such as: "diubah sehingga berbunyi sebagai
-  berikut", "disisipkan", "di antara ... disisipkan", "ditambah", "dihapus",
-  "dicabut dan dinyatakan tidak berlaku", "dicabut sebagian".
-- Dates follow Indonesian format with Indonesian month names (Januari,
-  Februari, Maret, April, Mei, Juni, Juli, Agustus, September, Oktober,
-  November, Desember). Distinguish: ditetapkan (enacted), diundangkan
-  (promulgated), mulai berlaku (enters into force).
-- Legal terms must be kept in Indonesian and never replaced by English
-  equivalents.
+- The text is in Bahasa Indonesia (formal legal register), with older documents exhibiting historical spelling (e.g., "dipergunakan", "oentoek", Van Ophuijsen, Suwandi/Soewandi) or authentic Dutch (*Nederlandsch*) in colonial Staatsblad gazettes (often paired with standard court doctrinal translations by Subekti/Tjitrosudibio or Tirtodiningrat). Preserve all text exactly as written in the selected manifestation. Never translate, modernize, or clean up authentic text.
+- Indonesian legislative drafting structure:
+  - *Modern structure:* title (judul); preamble: Menimbang, Mengingat, (Memperhatikan), Memutuskan / Menetapkan; body: Buku, Bab (Roman numerals), Bagian, Paragraf, Pasal (Arabic numerals, may include suffix letters such as "Pasal 6A"), Ayat (numbers in parentheses, e.g., "(2)"), Huruf (a., b., c.), Angka (1., 2., 3.), Butir; closing provisions: Ketentuan Peralihan, Ketentuan Penutup; Penjelasan (Umum and "Pasal demi Pasal"); Lampiran (annexes: tables, forms, matrices).
+  - *Classical codes & transitional formats:* Boek (Buku), Titel (Bab), Afdeling (Bagian), Artikel (Pasal), and Alinea/Lid (un-numbered paragraphs). UUD 1945 pre-amendment includes Penjelasan Resmi as an integral structural part. Follow each document's native format.
+- Amendments use standard formulas (e.g. "diubah sehingga berbunyi sebagai berikut", "disisipkan", "di antara ... disisipkan", "ditambah", "dihapus", "dicabut dan dinyatakan tidak berlaku", "dicabut sebagian") as well as historical subject-matter scope derogations (e.g. "mencabut ketentuan Buku II sepanjang mengenai tanah, bumi dan air...", "dinyatakan tidak berlaku sepanjang telah diatur dalam undang-undang ini", and criminal code transitions under Pasal 3 KUHP UU 1/2023).
+- Dates follow Indonesian format with Indonesian month names (Januari, Februari, Maret, April, Mei, Juni, Juli, Agustus, September, Oktober, November, Desember). Distinguish: ditetapkan (enacted), diundangkan (promulgated), mulai berlaku (enters into force).
+- Legal terms must be kept in Indonesian (or original Dutch in colonial sources) and never replaced by English equivalents.
 
 ABSOLUTE RULES (apply to every task unless your task says otherwise)
 1. VERBATIM: Never paraphrase, summarize, condense, translate, "clean up",
@@ -82,16 +66,20 @@ From the page content below, extract one record per legal instrument.
 HARD RULES
 - Copy titles and identifiers exactly as written (Indonesian, original
   capitalization). Do not translate or normalize.
-- "jenis" must be one of: UUD, TAP_MPR, UU, PERPPU, PP, PERPRES, KEPPRES,
-  PERMEN, PMK, KMK, KEPUTUSAN, INSTRUKSI, SURAT_EDARAN, PERDA_PROV,
-  PERDA_KAB_KOTA, PUTUSAN, LAINNYA. If none fits, use LAINNYA and fill
-  "jenis_raw" with the exact source wording.
+- "jenis" must be one of: UUD, TAP_MPR, TAP_MPRS, UU, UU_DARURAT, UU_FEDERAL,
+  PERPPU, PENPRES, PP, PERPRES, KEPPRES, PERMEN, PMK, KMK, KEPUTUSAN, INSTRUKSI,
+  SURAT_EDARAN, STAATSBLAD, ORDONNANTIE, MAKLUMAT, QANUN, PERDASUS, PERDASI,
+  PERDAIS, PERDA_PROV, PERDA_KAB_KOTA, PUTUSAN, LAINNYA. If none fits, use
+  LAINNYA and fill "jenis_raw" with the exact source wording.
+- "norm_character": for Keppres (especially pre-2004), specify "regeling" if it
+  sets general/abstract rules or "beschikking" if it is an individual administrative
+  appointment/decision. If unknown or modern, default to "regeling".
 - Fill dates only if explicitly stated; otherwise null. Never infer a date.
 - Include the absolute URL of the document file (PDF/HTML) if present.
 
 OUTPUT SCHEMA
-{ "records": [ { "jenis": str, "jenis_raw": str|null, "nomor": str|null,
-  "tahun": int|null, "instansi": str|null, "judul": str,
+{ "records": [ { "jenis": str, "jenis_raw": str|null, "norm_character": "regeling"|"beschikking"|"mixed",
+  "nomor": str|null, "tahun": int|null, "instansi": str|null, "judul": str,
   "tanggal_ditetapkan": "YYYY-MM-DD"|null, "tanggal_diundangkan": "YYYY-MM-DD"|null,
   "status_text": str|null, "file_url": str|null, "detail_url": str|null,
   "uncertain": bool, "uncertain_reason": str|null } ] }
@@ -290,14 +278,20 @@ dihapus", "Pasal 12 dicabut dan dinyatakan tidak berlaku", "ayat (2) diubah",
 
 OPERATIONS
 replace | insert_after | insert_before | delete | revoke | revoke_partial |
-rename | renumber
+rename | renumber | scope_derogation
 
 HARD RULES
 - Do not write the new wording yourself. Point to the node in THIS amending
   instrument that contains the new wording ("new_content_node_id"). The new
   wording is whatever that node says, verbatim.
 - "target_path" identifies the target provision by labels exactly as written
-  in the target, e.g., ["Pasal 5", "(2)", "huruf b"] .
+  in the target, e.g., ["Pasal 5", "(2)", "huruf b"] or ["Buku II"].
+- For "scope_derogation" (dekodifikasi parsial materiil / blanket subject derogation):
+  used when an act repeals a broad legal topic or domain without enumerating individual
+  articles (e.g. UUPA repealing Buku II BW regarding land except hypothec; UU Perkawinan
+  repealing Buku I BW regarding marriage; SEMA 3/1963). Fill "is_scope_derogation": true,
+  "derogation_subject" (e.g. "agraria_tanah", "perkawinan"), "scope_clause", and
+  "exception_clause" (e.g. "kecuali hipotek").
 - Determine the effective date ONLY from explicit text (e.g., "mulai berlaku
   pada tanggal diundangkan", "mulai berlaku pada tanggal 1 Januari 2022").
   "Pada tanggal diundangkan" means effective on the promulgation date; report
@@ -311,6 +305,8 @@ HARD RULES
 OUTPUT SCHEMA
 { "target_work_hint": {"jenis": str, "nomor": str, "tahun": int}|null,
   "operations": [ { "op": str, "target_path": [str], "new_content_node_id": str|null,
+  "is_scope_derogation": bool, "derogation_subject": str|null,
+  "scope_clause": str|null, "exception_clause": str|null,
   "effective_rule": str|null, "effective_date": "YYYY-MM-DD"|null,
   "evidence": {"node_id": str, "start_line": "Lxxxx", "end_line": "Lxxxx"},
   "uncertain": bool, "uncertain_reason": str|null } ] }
