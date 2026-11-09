@@ -54,22 +54,25 @@ CREATE TABLE node (
   text_sha256 TEXT, verbatim_ok BOOL, notes TEXT
 );
 
--- Change operations read from amending instruments
+-- Change operations read from amending instruments and court rulings
 CREATE TABLE amendment_op (
   id UUID PRIMARY KEY, source_work_id UUID, target_work_id UUID,
   op TEXT, target_node_key TEXT, content_node_id UUID,   -- new wording = verbatim node of the amending instrument
-  effective_date DATE, evidence_node_id UUID, evidence_lines INT4RANGE,
+  effective_date DATE, effective_date_rule TEXT,          -- immediate|fixed_delay|phased_provision|retroactive|contingent
+  evidence_node_id UUID, evidence_lines INT4RANGE,
   confidence REAL, status TEXT
 );
 
--- Per-provision version history
+-- Per-provision version history (Git-like provision commit history)
 CREATE TABLE node_version (
   id UUID PRIMARY KEY,
   work_id UUID, node_key TEXT, version_seq INT,
   content_node_id UUID REFERENCES node,   -- source node holding the wording in this version (null if deleted)
-  change_type TEXT,                       -- original|amended|inserted|deleted|revoked|...
+  change_type TEXT,                       -- original|amended|inserted|deleted|revoked|annulled_by_court|conditionally_unconstitutional
   valid_from DATE, valid_to DATE,         -- valid_to NULL = currently in force
   caused_by_op UUID REFERENCES amendment_op,
+  court_annotation TEXT,                  -- amar putusan for MK/MA conditional interpretations
+  phrase_mask JSONB,                      -- word/character offset masks for phrase-level court annulments
   renumbered_from TEXT,
   UNIQUE (work_id, node_key, version_seq),
   EXCLUDE USING gist (work_id WITH =, node_key WITH =, daterange(valid_from, valid_to) WITH &&)

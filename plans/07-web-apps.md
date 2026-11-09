@@ -39,7 +39,11 @@ Before any frontend work, read every `SKILL.md` in `.agents/skills/` (currently 
 
 - **PDF panel:** lazy page render, highlight of the selected node's lines via `page_map`, manifestation selector (shows source website domain, clickable original source URL, `.go.id` verification badge, and fetch timestamp).
 - **Parsing panel:** virtualized collapsible tree (Bab → … → Butir); click → PDF highlight; text shown verbatim in a reading column (max ~72ch); "Teks sumber mentah" tab with line IDs in monospace; "Laporkan kesalahan" creates a review item.
-- **Changes panel:** instrument timeline, `node_version` list (valid_from–valid_to, change type, causing instrument + evidence link), inline/side-by-side word diff.
+  - **"Hukum Blame" Gutter (Git Blame Mode):** Toggleable provenance gutter beside each provision. Displays the authoring enactment tag (e.g. `[UU 16/2019]` or `[MK 91/2020]`), effective date, and author badge. Clicking any blame pill opens the commit inspection popover detailing the exact amendment op, evidence line range, and diff.
+  - **Court Annotation Badges:** For provisions altered or conditionally interpreted by Mahkamah Konstitusi (MK) or Mahkamah Agung (MA), displays an accessible callout badge (e.g. "⚠ Inkonstitusional Bersyarat — Putusan MK No. 91/PUU-XVIII/2020") rendering the court's verbatim operative holding (*amar putusan*).
+- **Changes panel:** instrument timeline, `node_version` list (valid_from–valid_to, change type, causing instrument + evidence link), visual diff inspector.
+  - **Visual Diff Engine:** Side-by-side and unified inline diff comparing any two historical dates ($T_1$ vs $T_2$) or amending instruments. Insertions highlighted with subtle accessible green tint + `+` tag; deletions displayed with strikethrough + `-` tag; word-level changes highlighted cleanly without breaking verbatim spacing.
+  - **Omnibus Batch Inspector:** If an op was introduced by an Omnibus instrument (e.g. UU Cipta Kerja), displays a batch tag linking to all other laws amended within the same legislative cluster.
 - **Date T:** whole tree shows state as of T; revoked = struck through **and** labelled "Dicabut"; inserted = labelled "Disisipkan"; the selected T is always shown as text.
 - Responsive: ≥1069px three panels; 834–1068px two panels + tab for the third; <834px one panel with segmented control.
 

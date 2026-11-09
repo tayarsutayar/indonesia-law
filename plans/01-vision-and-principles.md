@@ -16,13 +16,14 @@ Consequences:
 3. **Extract** text (native or vision OCR for historic typewriter scans) with line numbering and old-spelling awareness.
 4. **Split** every instrument into its smallest provisions **verbatim** (pointers, never LLM copies).
 5. **Map relations** between instruments and between provisions, with evidence, and chase backward citations to discover missing historic regulations.
-6. **Version** at the instrument level and the smallest-provision level.
-7. **Compile** consolidated versions as of any date T (time travel).
-8. **Read and search**: viewer (original PDF ↔ parsed tree ↔ change history), metadata and full-text search.
+6. **Version** at the instrument level and the smallest-provision level using a Git-like legal version control system (VCS).
+7. **Compile and time-travel**: generate consolidated versions as of any historical date T (`git checkout <date>`) with full "Git blame" provenance down to the provision/phrase level.
+8. **Read, search and diff**: viewer (original PDF ↔ parsed tree ↔ change history), metadata and full-text search, and visual side-by-side / inline diffing between any two historical dates or amending acts.
 9. **Review**: a human review queue for every uncertain case.
 10. **Visualize** the process (virtual office with worker sprites), dashboard, logs and token tracker.
 11. Run in **manual** or **automatic** (scheduled, incremental) mode.
 12. **Self-Improve**: autonomous feedback loops for every agent category to refine prompts and micro-skills against real-world errors, gated by non-regression benchmarks.
+13. **Developer & Legal AI Interoperability**: Git-compatible repository export (Markdown tree + commit history) and temporal snapshot APIs to prevent temporal hallucinations in legal LLM agents.
 
 ## 3. Users and Roles
 
@@ -72,7 +73,9 @@ v1.0 is single-user with a static token, but every review decision still records
 | Node | A provision inside one source document; its text is a verbatim slice of `source_text` |
 | `node_key` | Stable provision ID across versions, e.g., `uu-1-2004/pasal-5/ayat-2/huruf-b` |
 | Node version | A temporal version of one `node_key` (`valid_from`–`valid_to`) |
-| Amendment op | A change operation read from an amending instrument (replace, insert, delete, revoke, …) |
-| Consolidation | The provision tree in force as of date T |
+| Amendment op | A change operation read from an amending instrument or court decision (replace, insert, delete, revoke, court annulment, conditional interpretation) |
+| Consolidation | The provision tree in force as of date T (equivalent to `git checkout <date>`) |
+| Hukum Blame | Provenance view showing the authoring legal act, promulgation date, and effective date for any specific line, provision, or phrase |
+| Judicial Hotfix | An external modification or annulment resulting from a Constitutional Court (MK) or Supreme Court (MA) decision |
 | Swarm | A pool of parallel agent instances for one category/queue |
 | Golden set | Manually annotated documents used to score agents and prompts |

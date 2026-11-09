@@ -69,11 +69,25 @@ class BaseAgent:
 
 **Relation Agent.** Flexible types (`relation_type` table can grow + `lainnya` + `custom_label`). Instrument- or node-level. Evidence + confidence required. Target resolution via candidate search over `work` (trigram + jenis/nomor/tahun); ambiguous → `unresolved_reference` + review item.
 
-**Amendment Analyzer.** Converts instructions (*diubah, disisipkan, ditambah, dihapus, dicabut, dicabut sebagian*) into `amendment_op` with `target_path`, `new_content_node_id` (a verbatim node in the amending instrument), effective-date rule, evidence.
+**Amendment Analyzer.** Converts instructions and court rulings into atomic `amendment_op` records:
+- **Standard Indonesian Legislative Formula:** Parses formulas mandated by UU 12/2011 (*diubah sehingga berbunyi...*, *di antara Pasal X dan Y disisipkan Pasal XA*, *ketentuan Pasal Z dihapus*, *dicabut dan dinyatakan tidak berlaku*). Links `target_path` to `new_content_node_id` (a verbatim node from the amending instrument).
+- **Constitutional Court (MK) & Supreme Court (MA) Judicial Review Engine:** Treats final and binding court rulings (*Putusan MK/MA*) as external judicial commits/hotfixes:
+  1. *Pembatalan Penuh:* Provision annulled (`annulled_by_court`).
+  2. *Pembatalan Sebagian/Frasa:* Nullifies specific words or sentences while retaining the remaining provision, generating a `phrase_mask` on the node version.
+  3. *Inkonstitusional/Konstitusional Bersyarat:* The text remains intact but is annotated with the mandatory interpretation formula from the court's operative holding (*amar putusan*), categorized as `conditionally_unconstitutional`.
+- **Omnibus Law Multi-Target Decomposition:** Deconstructs complex omnibus instruments (e.g. UU Cipta Kerja, UU P2SK, UU Kesehatan) which amend dozens of distinct laws simultaneously. Emits independent, atomic `amendment_op` batches grouped by target `work_id` so target documents can be versioned in parallel.
+- **Effective Date & Transition Clauses:** Scans closing and transitional provisions (*Ketentuan Penutup* & *Ketentuan Peralihan*) to identify non-immediate effective dates (e.g., "berlaku 2 tahun sejak tanggal diundangkan", retroactive dates, or phased schedules where specific chapters take effect on future dates). Computes accurate `valid_from` for each op.
 
-**Version Builder.** Applies ops ordered by effective date → promulgation date → instrument number. Invariant: no overlapping validity per `node_key` (enforced by DB constraint). Ambiguity (renumbering, unclear target, missing date) → `version_resolve@v1`; still uncertain → review.
+**Version Builder.** Replays amendment and court operations in strict chronological order (ordered by: effective date → promulgation date → instrument number → court decision date). Invariant: no overlapping temporal validity per `node_key` (enforced by DB `EXCLUDE USING gist` constraint).
+- Resolves conflicts, renumbering (`node_version.renumbered_from`), and transitional periods.
+- Reconstructs full **"Hukum Blame"** metadata: maps each provision, paragraph, and phrase to the exact enactment or court decision that introduced or modified it.
+- Ambiguity (renumbering, unclear target, missing date) → `version_resolve@v1`; still uncertain → review.
 
-**Compiler.** Builds the tree valid at T (`valid_from ≤ T < valid_to`), caches snapshots keyed by `built_from_hash`, marks nodes `amended | inserted | revoked` with their cause.
+**Compiler.** Point-in-time time-travel engine (equivalent to `git checkout <date>`).
+- Builds the complete provision tree valid as of date T (`valid_from ≤ T < valid_to`).
+- Resolves phrase masks and conditional court annotations for accurate legal display at date T.
+- Computes structural and textual diffs between any two dates ($T_1$ vs $T_2$) or between any two amending works.
+- Caches compiled snapshots keyed by `built_from_hash`.
 
 ## 4. Verbatim and No-Regex Rules
 
@@ -98,13 +112,15 @@ class BaseAgent:
 
 QC is independent (different prompt, ideally different temperature/model), evidence-based, and **never fixes anything** — it rejects and routes; producers fix.
 
-## 6. Two-Level Versioning
+## 6. Two-Level Versioning & Git-for-Law Architecture
 
-- Instrument level (FRBR-like): `work` → `expression` → `manifestation`.
-- Provision level: `node_key` + `node_version {content_node_id, valid_from, valid_to, change_type, caused_by_op, renumbered_from, version_seq}`.
-- Dates stored separately (`ditetapkan`, `diundangkan`, `mulai_berlaku`, `berlaku_surut`); `valid_from` comes from explicit text with evidence, never assumed. Missing → `needs_review`.
-- Court annulments (Putusan MK) produce `annulled_by_court` versions via the same op model.
-- Word diffs between consecutive versions are display-only and never change data.
+- **Instrument level (FRBR-like):** `work` (identity) → `expression` (content over time / consolidated as of T) → `manifestation` (physical source PDF/HTML + hash).
+- **Provision level (Git-like VCS):** `node_key` + `node_version {content_node_id, valid_from, valid_to, change_type, caused_by_op, court_annotation, phrase_mask, renumbered_from, version_seq}`.
+- **Commit Equivalency:** Each legal instrument (or court decision) amending an existing work acts as a legal "commit". A single omnibus law functions as a multi-repository "mega-commit" that branches across dozens of target works.
+- **Blame Tracking:** By querying the active `node_version` at any given historical date, the system outputs a `git blame`-like line-by-line attribution indicating the exact amending law, promulgation date, and effective date.
+- **Dates & Commencement Invariants:** Dates are stored explicitly (`ditetapkan`, `diundangkan`, `mulai_berlaku`, `berlaku_surut`). `valid_from` is computed from statutory commencement rules with evidence, never assumed. Missing or ambiguous commencement → `needs_review`.
+- **Judicial Annulments & Annotations:** Court decisions (Putusan MK & MA) produce `annulled_by_court` or `conditionally_unconstitutional` versions, functioning as external regulatory patches without requiring parliamentary re-enactment.
+- **Word & Structural Diffs:** Deterministic, display-only word diffs between consecutive versions or arbitrary dates $T_1$ and $T_2$. Diffing never alters stored node text.
 
 ## 7. Swarm and Modes
 
