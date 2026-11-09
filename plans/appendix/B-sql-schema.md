@@ -24,9 +24,11 @@ CREATE TABLE work_date (           -- dates kept separate, never assumed
 -- Physical copy per source
 CREATE TABLE manifestation (
   id UUID PRIMARY KEY, work_id UUID REFERENCES work,
-  source_name TEXT, source_url TEXT, minio_key TEXT,
-  sha256 TEXT, content_type TEXT, size_bytes BIGINT,
-  is_canonical BOOL DEFAULT false, fetched_at TIMESTAMPTZ
+  source_name TEXT, source_url TEXT NOT NULL,
+  source_domain TEXT NOT NULL, is_gov_domain BOOL DEFAULT false,
+  source_status_text TEXT, source_metadata JSONB,
+  minio_key TEXT, sha256 TEXT, content_type TEXT, size_bytes BIGINT,
+  is_canonical BOOL DEFAULT false, fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Numbered source text (Extractor output)

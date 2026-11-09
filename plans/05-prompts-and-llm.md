@@ -29,7 +29,9 @@ Model names are never hard-coded; the deployment is an env setting.
 
 | Prompt ID | Agent | Output |
 |---|---|---|
-| `scout_metadata@v1` | Scout | metadata records |
+| `scout_metadata@v1` | Catalog Scout | metadata records |
+| `scout_search@v1` | Search Hunter | candidate URLs + relevance score |
+| `scout_heritage@v1` | Heritage Scout | targeted search queries for missing cited laws |
 | `extract_ocr@v1` | Extractor (scans) | transcribed lines + confidence |
 | `split_skeleton@v1` | Splitter pass 1 | top-level units (pointers) |
 | `split_deep@v1` | Splitter pass 2 | sub-provision tree (pointers) |
@@ -39,8 +41,10 @@ Model names are never hard-coded; the deployment is an env setting.
 | `version_resolve@v1` | Version Builder (ambiguous cases) | resolutions |
 | `qc_node@v1`, `qc_relation@v1`, `qc_version@v1`, `qc_display@v1`, `qc_chief@v1` | QC tiers | verdicts + routing |
 | `supervisor@v1` | Supervisor (optional) | scaling / priority proposals |
+| `optimizer_rca@v1` | Reflection Agent | failure categorization & root-cause report |
+| `optimizer_prompt@v1` | Prompt Optimizer | candidate prompt patch `@v(N+1)` |
 
-Assembly order: preamble → ROLE / TASK / HARD RULES → schema → 2–4 few-shot examples from the golden set → INPUT.
+Assembly order: preamble → ROLE / TASK / HARD RULES → dynamic micro-skills (from `skill_bank`) → schema → 2–4 targeted few-shot examples → INPUT.
 
 ## 4. Prompt Operations
 
@@ -61,3 +65,13 @@ Assembly order: preamble → ROLE / TASK / HARD RULES → schema → 2–4 few-s
 - Hash cache: identical `text_sha256` + prompt version → reuse.
 - Right-sized windows for Splitter; QC LLM judges run on samples where deterministic checks already passed (configurable sampling rate per tier).
 - Phase 6 gate: measured cost per document on ~1,000 documents, projected cost for the remaining corpus, approved before full scale.
+
+## 7. Dynamic Skill Bank and Self-Improvement Loop
+
+1. **Dynamic Micro-Skill Injection:** When parsing diverse documents across different decades (e.g. 1945–1959 vs 1999–present), fixed prompts risk bloat. Agents query the `skill_bank` using semantic search on the document's era, instrument type, and layout features to retrieve relevant micro-guidelines (e.g., `Old_Spelling_VanOphuijsen_Normalizer`, `Emergency_Law_Article_Parser`).
+2. **Error-Driven Reflection (Closed-Loop Learning):** Every human intervention in `review_decision` (corrections of pointers, OCR mismatches, missed amendments) triggers an asynchronous analysis by `optimizer_rca@v1`. The agent determines whether the failure stemmed from missing context, ambiguous prompt phrasing, or unseen drafting quirks.
+3. **Automated Candidate Tuning:** The Optimizer synthesizes prompt improvements or new micro-skills. All candidate prompts (`prompt_candidate`) are evaluated against the full Golden Set via `eval:prompts`.
+4. **Safety Guarantees & Anti-Regression:**
+   - Candidate prompts must achieve $\ge$ existing golden-set accuracy with 0% regression on verbatim and continuity checks.
+   - Core invariants in `preamble@v1` (verbatim slicing, zero hallucination, no legal opinion) are system-enforced and cannot be overridden by self-improvement.
+   - Operations dashboard surfaces a side-by-side diff of proposed prompt modifications and score deltas for auditability.

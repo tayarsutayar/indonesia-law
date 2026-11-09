@@ -17,6 +17,9 @@
 | UI misrepresents status or text | Loss of trust | Text/status integrity rules (`07` §6), shared enums, e2e tests |
 | Design rules conflict with dense data UI | Inconsistent UI | Documented adaptations (`08` §1), PR checklist |
 | Review queue grows faster than humans resolve it | Coverage stalls | Aging alerts, prioritization by blocking impact, batch decisions for identical cases |
+| Historic scans / faint typewriter text (1945–1960) degrade OCR accuracy | Text errors | Two-pass vision transcription + old-spelling dictionary + contrast enhancement; unresolved lines flagged for human review |
+| Unconstrained search engine crawlers fetch unofficial blogs / fake drafts | Corpus contamination | Strict authenticity verification: mandatory official state gazette seal/signatures, domain whitelisting, verification against master registry |
+| Agent self-improvement causes prompt drift or catastrophic forgetting | Quality regression | Immutable `preamble@v1`, automated Golden-Set non-regression benchmark gate, human-in-the-loop signoff for system prompt promotions |
 
 ## 2. Decisions Needing Approval
 
@@ -26,13 +29,15 @@
 | D2 | `critical` red (`#d70015`) as the only exception to the single-accent rule, for destructive/blocking states | Approve; otherwise blocking states use ink + icon only | **Approved** | Allowed for destructive / blocking alert states. |
 | D3 | Frosted parchment global nav instead of the skill's black nav, to keep the app fully light | Approve | **Approved** | Light mode consistency. |
 | D4 | 14px `caption` allowed for dense tables/logs (body stays 17px elsewhere) | Approve | **Approved** | 14px caption permitted for dense tables and logs. |
-| D5 | Canonical manifestation priority (issuer site > peraturan.go.id > JDIH > BPK) | Approve, configurable | **Approved** | Priority established and configurable. |
+| D5 | Canonical manifestation priority (.go.id Official Gazette scan > .go.id issuer portal > JDIH BPK > peraturan.go.id > .ac.id / institutional archives > general web) | Approve, configurable | **Approved** | Discovery ingests from the entire internet, with strict priority and canonical preference given to .go.id sources. |
 | D6 | Display QC worker (Playwright) becomes required, not optional | Approve | **Approved** | Headless Playwright worker required starting milestone F4. |
+| D7 | Agent Continuous Self-Improvement & Dynamic Skill Evolution | Approve with Golden Set guardrails | **Approved** | Agents refine micro-skills and candidate prompts; promotion blocked on any golden set regression. |
+| D8 | Historical Scope & Open-Web Discovery Swarm (1945–present) | Approve | **Approved** | Ingests from the whole internet from 1945–present, prioritizing .go.id for authoritative manifestations. |
 
 ## 3. Decisions & Confirmed Parameters (Resolved Open Questions)
 
-1. **Primary source:** Direct crawl targeting `peraturan.go.id`.
-2. **Pilot family:** State Finance & State Property / BMN (*Keuangan Negara dan BMN*).
+1. **Source strategy & Historical Depth:** Open-web discovery swarm crawling the entire internet (official portals, academic repositories, legal archives, public domain libraries) for all national legal instruments from 1945 through the present day. Queue scheduling, manifestation ranking, and canonical selection strictly prioritize official `.go.id` government domains.
+2. **Pilot family:** State Finance & State Property / BMN (*Keuangan Negara dan BMN*), tracing historic predecessors back to early independence foundations.
 3. **Legal validation:** Automated validation via LLM; human legal expert escalations when human sign-off is required.
 4. **Model deployment & credentials:** Deployment name, endpoint, and credentials are configured directly in `.env` (kept strictly confidential, not accessed/read by agent).
 5. **LLM Budget:** Configured in `.env` with daily cap enforcement.

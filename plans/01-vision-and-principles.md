@@ -11,17 +11,18 @@ Consequences:
 
 ## 2. Product Goals
 
-1. **Discover** all Indonesian regulations and legal instruments from official sources.
+1. **Discover** all Indonesian regulations and legal instruments from the inception of the Republic of Indonesia (August 17, 1945) through the present day by crawling across the entire open web (including academic repositories, legal portals, and digital archives), with strict priority routing and canonical preference given to official `.go.id` domains.
 2. **Fetch** original documents (PDF/HTML) politely (rate-limited).
-3. **Extract** text (native or vision OCR) with line numbering.
+3. **Extract** text (native or vision OCR for historic typewriter scans) with line numbering and old-spelling awareness.
 4. **Split** every instrument into its smallest provisions **verbatim** (pointers, never LLM copies).
-5. **Map relations** between instruments and between provisions, with evidence.
+5. **Map relations** between instruments and between provisions, with evidence, and chase backward citations to discover missing historic regulations.
 6. **Version** at the instrument level and the smallest-provision level.
 7. **Compile** consolidated versions as of any date T (time travel).
 8. **Read and search**: viewer (original PDF ↔ parsed tree ↔ change history), metadata and full-text search.
 9. **Review**: a human review queue for every uncertain case.
 10. **Visualize** the process (virtual office with worker sprites), dashboard, logs and token tracker.
 11. Run in **manual** or **automatic** (scheduled, incremental) mode.
+12. **Self-Improve**: autonomous feedback loops for every agent category to refine prompts and micro-skills against real-world errors, gated by non-regression benchmarks.
 
 ## 3. Users and Roles
 
@@ -47,12 +48,17 @@ v1.0 is single-user with a static token, but every review decision still records
 | P8 | **Corpus awareness** | Every prompt states that the input is Indonesian legal text |
 | P9 | **Light, calm, accessible UI** | Apple Web Design System, light theme only; target WCAG 2.2 AA (see `07`, `08`) |
 | P10 | **Display integrity** | The UI shows text exactly as stored and status exactly as in the DB; nothing appears "final" before it is published |
+| P11 | **Guarded self-improvement** | Agents autonomously cluster failures, expand micro-skills, and propose prompt patches, but promotion to production strictly requires passing the automated golden-set regression suite; `preamble@v1` remains permanently immutable |
 
 ## 5. Scope
 
-**In scope (v1.0):** end-to-end pipeline for one primary source and one fully covered pilot instrument family, then expansion; viewer; internal search (metadata + provision full text); review queue; dashboard; office visualization; manual/automatic mode; Docker Compose.
+**In scope (v1.0):** 
+- Comprehensive historical discovery swarm: Open-web harvesting across all online sources (academic repositories, open legal portals, digital libraries), with priority scheduling and canonical preference anchored in `.go.id` government domains (BPK JDIH, JDIHN, Setneg/Setkab, Peraturan.go.id, Courts).
+- End-to-end extraction and versioning pipeline with support for historic typewriter scans, old spelling conventions (Van Ophuijsen, Suwandi/Soewandi), and complex drafting styles.
+- Continuous agent self-improvement subsystem: Dynamic Skill Bank, failure reflection, candidate prompt generator, automated regression testing, and promotion control.
+- End-user features: viewer (original PDF ↔ parsed tree ↔ change history), internal search (metadata + provision full text), review queue, dashboard, coverage tracker by era/year, office visualization, manual/automatic mode, Docker Compose.
 
-**Out of scope (initially):** translation, legal opinions/analysis, public semantic search, multi-tenancy, complex auth (static token is enough, upgradeable), dark theme.
+**Out of scope (initially):** translation, subjective legal opinions/advisory, public consumer semantic search, multi-tenancy, complex auth (static token is enough, upgradeable), dark theme.
 
 **"Without exception"** is operationalized as **coverage tracking**: the dashboard shows % discovered / fetched / extracted / split / verified / related / versioned / published, plus a failure list with reasons. Nothing is dropped silently.
 

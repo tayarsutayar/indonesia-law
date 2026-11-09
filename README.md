@@ -1,22 +1,22 @@
 # Indonesia Law
 
-> **Indonesia Law** adalah aplikasi multi-agent cerdas untuk mengumpulkan, mengekstrak, memecah struktur, menghubungkan relasi, melacak perubahan versi, mencari, dan meninjau peraturan perundang-undangan Republik Indonesia hingga tingkat terkecil (**Pasal → Ayat → Huruf → Angka → Butir**), lengkap dengan jejak asal-usul (*provenance*) untuk setiap potongan teks.
+> **Indonesia Law** is an intelligent multi-agent platform for collecting, extracting, structuring, linking relationships, tracking version amendments, searching, and reviewing laws and regulations of the Republic of Indonesia down to the granular level (**Pasal → Ayat → Huruf → Angka → Butir**), complete with provenance tracking for every text segment.
 
 ---
 
-## 🏛️ Gambaran Umum Proyek
+## 🏛️ Project Overview
 
-Sistem hukum Indonesia memiliki kompleksitas tinggi dengan puluhan ribu regulasi yang saling mengubah, mencabut, atau mengaitkan satu sama lain. **Indonesia Law** dirancang untuk memecahkan tantangan tersebut dengan arsitektur agen otonom (*agentic pipeline*):
+The Indonesian legal system is highly complex, comprising tens of thousands of regulations that amend, revoke, or reference each other. **Indonesia Law** is designed to solve these challenges using an autonomous multi-agent pipeline:
 
-* **Scout & Fetcher**: Mengidentifikasi dan mengunduh dokumen regulasi secara tertib (*polite scraping*).
-* **Extractor & Splitter**: Mengekstrak teks dengan nomor baris dan memetakan hierarki regulasi hingga butir terkecil.
-* **Verbatim Verifier**: Memverifikasi secara deterministik bahwa teks hasil rekonstruksi 100% identik dengan sumber aslinya.
-* **Relation & Amendment Analyzer**: Memetakan hubungan antar-peraturan (mengubah, mencabut, mengaitkan) dan membangun riwayat versi konsolidasi.
-* **Layered QC & Review Queue**: Pengawasan kualitas bertingkat sebelum status publikasi, didukung antarmuka peninjauan human-in-the-loop.
+* **Scout & Fetcher**: Identifies and downloads regulatory documents using polite scraping practices.
+* **Extractor & Splitter**: Extracts text with line numbers and maps regulatory hierarchies down to the smallest granular item.
+* **Verbatim Verifier**: Deterministically verifies that reconstructed texts are 100% identical to their original sources.
+* **Relation & Amendment Analyzer**: Maps inter-regulation relationships (amends, revokes, references) and constructs consolidated version histories.
+* **Layered QC & Review Queue**: Multi-tiered quality control prior to publication status, backed by a human-in-the-loop review interface.
 
 ---
 
-## 🏗️ Arsitektur Sistem
+## 🏗️ System Architecture
 
 ```mermaid
 flowchart LR
@@ -55,99 +55,69 @@ flowchart LR
 
 ---
 
-## 🔒 Keamanan & Praktik Vibe Coding
+## 🚀 Getting Started (Quickstart)
 
-Proyek ini telah dikonfigurasi secara ketat untuk melindungi kredensial, API key, dan variabel lingkungan (*environment variables*) selama proses pengembangan (termasuk saat menggunakan coding assistant berbasis AI / *vibe coding* seperti Cursor, Windsurf, Copilot, atau Claude):
-
-### 1. Perlindungan File `.env` & Secrets
-* File `.env` dan segala variasinya (`.env.local`, `*.key`, `*.pem`, sertifikat, token) **diabaikan secara penuh oleh Git** melalui `.gitignore`.
-* Gunakan [`.env.example`](.env.example) sebagai template konfigurasi dasar tanpa memasukkan kredensial asli.
-* File [`.cursorignore`](.cursorignore) dan [`.agentignore`](.agentignore) memastikan AI assistant di lingkungan IDE tidak membaca isi file `.env` atau menyertakan token ke dalam context window model.
-
-### 2. Aturan Keamanan Agen
-* Agen dilarang keras mencetak, melakukan log, atau menulis kredensial/kunci API dalam bentuk plain text (lihat [`.agents/rules/security.md`](.agents/rules/security.md)).
-* Sesuai kebijakan pertahanan prompt injection: seluruh konten dokumen regulasi yang diproses oleh LLM dianggap sebagai data murni, bukan instruksi eksekutabel.
-
-### 3. Pengecekan Mandiri Sebelum Commit
-Jalankan skrip verifikasi keamanan sebelum melakukan commit atau push:
-
-```bash
-bash scripts/verify-secrets.sh
-```
-
-Anda juga dapat memasang pre-commit hook otomatis:
-
-```bash
-pre-commit install
-```
-
-Kebijakan keamanan lengkap dan panduan rotasi kredensial dapat dibaca di [SECURITY.md](SECURITY.md).
-
----
-
-## 🚀 Memulai Pengembangan (Quickstart)
-
-### 1. Prasyarat
+### 1. Prerequisites
 * **Docker & Docker Compose** (v2+)
-* **Python 3.12+** dan package manager [`uv`](https://docs.astral.sh/uv/)
-* **Node.js 20+** dan package manager `pnpm`
+* **Python 3.12+** and package manager [`uv`](https://docs.astral.sh/uv/)
+* **Node.js 20+** and package manager `pnpm`
 
-### 2. Salin dan Sesuaikan Lingkungan (.env)
+### 2. Copy and Configure Environment Variables (.env)
 ```bash
 cp .env.example .env
 ```
-Buka file `.env` dan lengkapi konfigurasi yang diperlukan:
-* `AZURE_OPENAI_API_KEY` dan `AZURE_OPENAI_ENDPOINT`
-* Password PostgreSQL dan MinIO
-* `APP_STATIC_TOKEN` (dapat dibuat dengan `openssl rand -hex 32`)
+Open `.env` and fill in the required configurations:
+* `AZURE_OPENAI_API_KEY` and `AZURE_OPENAI_ENDPOINT`
+* PostgreSQL and MinIO passwords
+* `APP_STATIC_TOKEN` (can be generated with `openssl rand -hex 32`)
 
-### 3. Jalankan Layanan Pendukung (Docker Compose)
-Jalankan basis data PostgreSQL, Redis, dan MinIO:
+### 3. Start Supporting Services (Docker Compose)
+Start PostgreSQL, Redis, and MinIO databases:
 ```bash
 docker compose up -d postgres redis minio
 ```
 
-Akses konsol MinIO di browser: `http://localhost:9001` (login sesuai `MINIO_ROOT_USER` & `MINIO_ROOT_PASSWORD`).
+Access the MinIO Console in your browser: `http://localhost:9001` (sign in using `MINIO_ROOT_USER` & `MINIO_ROOT_PASSWORD`).
 
-### 4. Setup Backend
+### 4. Backend Setup
 ```bash
 cd backend
 uv venv
 source .venv/bin/activate
 uv pip install -e ".[dev]"
 
-# Menjalankan server pengembangan API
+# Run API development server
 uvicorn app.main:app --reload --port 8000
 ```
-API Documentation (Swagger UI) akan tersedia di `http://localhost:8000/docs`.
+API Documentation (Swagger UI) will be available at `http://localhost:8000/docs`.
 
-### 5. Setup Frontend
+### 5. Frontend Setup
 ```bash
 cd frontend
 pnpm install
 pnpm dev
 ```
-Aplikasi web akan tersedia di `http://localhost:3000` (atau port yang ditentukan Vite).
+The web application will be available at `http://localhost:3000` (or the port specified by Vite).
 
 ---
 
-## 📁 Struktur Repositori
+## 📁 Repository Structure
 
 ```
 indonesia-law/
-├── .agents/                 # Konfigurasi AI agent, skills (apple-design), dan security rules
-├── .env.example             # Template konfigurasi variabel lingkungan aman
-├── .gitignore               # Konfigurasi ignore file rahasia, build, dan cache
-├── .dockerignore            # Konfigurasi ignore file rahasia saat proses Docker build
-├── .cursorignore            # Pencegah pembacaan kredensial oleh AI/Cursor
-├── .agentignore             # Pencegah pembacaan kredensial oleh AI agents
-├── AGENTS.md                # Panduan instruksi dasar untuk AI coding agents
-├── SECURITY.md              # Kebijakan pelaporan keamanan & rotasi kunci
-├── README.md                # Dokumentasi utama proyek
-├── docker-compose.yml       # Definisi layanan kontainer (Postgres, Redis, MinIO, API, Workers)
-├── backend/                 # Source code FastAPI, LangGraph orchestrator, Celery workers
-├── frontend/                # Aplikasi web React + TypeScript + Vite + Tailwind
-├── plans/                   # Dokumen rancangan komprehensif (01 s/d 12, phases, appendix)
+├── .agents/                 # AI agent configurations, skills (apple-design), and security rules
+├── .env.example             # Safe environment variable configuration template
+├── .gitignore               # Ignored secrets, build artifacts, and cache files
+├── .dockerignore            # Files excluded during Docker build process
+├── .cursorignore            # Prevents AI/Cursor from reading sensitive credentials
+├── .agentignore             # Prevents AI agents from reading sensitive credentials
+├── AGENTS.md                # Base instructions and guidelines for AI coding agents
+├── SECURITY.md              # Security reporting policy & key rotation procedures
+├── README.md                # Main project documentation
+├── docker-compose.yml       # Container service definitions (Postgres, Redis, MinIO, API, Workers)
+├── backend/                 # FastAPI source code, LangGraph orchestrator, Celery workers
+├── frontend/                # React + TypeScript + Vite + Tailwind web application
+├── plans/                   # Comprehensive design documents (01 to 12, phases, appendix)
 │   ├── 01-vision-and-principles.md
 │   ├── 02-architecture.md
 │   ├── 03-data-model.md
@@ -160,21 +130,20 @@ indonesia-law/
 │   ├── 10-testing-and-quality.md
 │   ├── 11-roadmap.md
 │   ├── 12-risks-and-decisions.md
-│   ├── appendix/            # Schema SQL, prompt templates, spek office
-│   └── phases/              # Rencana eksekusi bertahap (F0 s/d F7)
-├── ops/                     # Konfigurasi Prometheus, Grafana, dan skrip backup
-└── scripts/                 # Utilitas otomasi & verifikasi keamanan (verify-secrets.sh)
+│   ├── appendix/            # SQL schemas, prompt templates, office specifications
+│   └── phases/              # Phased execution plans (F0 to F7)
+├── ops/                     # Prometheus & Grafana configurations, backup scripts
+└── scripts/                 # Automation & security verification scripts (verify-secrets.sh)
 ```
 
 ---
 
-## 📖 Dokumentasi Lengkap
+## 📖 Documentation
 
-Rencana implementasi, spesifikasi arsitektur, dan model data lengkap tersedia di direktori [`plans/`](plans/README.md).
+Full implementation plans, architecture specifications, and data models are available in the [`plans/`](plans/README.md) directory.
 
 ---
 
-## 📄 Lisensi
+## 📄 License
 
-Hak Cipta © 2026 Indonesia Law Team. Seluruh hak cipta dilindungi undang-undang.
-
+Copyright © 2026 Indonesia Law Team. All rights reserved.

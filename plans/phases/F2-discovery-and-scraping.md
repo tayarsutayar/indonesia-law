@@ -8,7 +8,9 @@
 - [ ] Redis per-domain rate limiter (min interval, ±30% jitter, concurrency 1), robots.txt + `Crawl-delay`, honest `IndonesiaLawBot` User-Agent, crawl windows.
 - [ ] Backoff on 429/503, auto-pause blocked domains, `domain.throttled` / `domain.paused` events.
 - [ ] Raw response cache (ETag / If-Modified-Since); `http_request_log` for every request.
-- [ ] Adapter interface + first adapter for the primary source (answer `12` Q1 first); optional seed import from an existing index.
+- [ ] Adapter interface + primary source adapters: BPK JDIH, JDIHN, Setneg/Setkab, Peraturan.go.id, and MKRI; seed import from 1945–present master registry grid.
+- [ ] Search Hunter: integration with search engine API (or SearXNG) to formulate queries targeting unindexed historic/archival PDFs on `.go.id` and national libraries.
+- [ ] Heritage Scout: task queue triggered by citations to unindexed historic predecessors.
 - [ ] Scout: listing parsing, LLM metadata extraction (`scout_metadata@v1`) only for unstructured pages; dedup by canonical key; conflicts → manifestations; canonical rule (D5).
 - [ ] Playwright `worker-browser` for `q.fetch.js` if the source needs it.
 

@@ -9,30 +9,36 @@ flowchart LR
     VIEW[Viewer: PDF / Parsing / Changes]
     REV[Review Queue]
     OFF[Office PixiJS]
-    DASH[Dashboard]
+    DASH[Dashboard & 1945+ Coverage]
     LOGS[Logs & Tokens]
-    CTRL[Control Panel]
+    CTRL[Control & Prompt Evolution]
   end
   subgraph BE[Python Backend]
     API[FastAPI REST + WS]
     ORCH[Orchestrator LangGraph]
     SCHED[Scheduler auto mode]
     LLMGW[LLM Gateway: preamble, tokens, budget]
+    SKILLB[(Dynamic Skill Bank)]
   end
   subgraph SW[Agent Swarms — Celery]
-    S1[Scout] --- S2[Fetcher] --- S3[Extractor] --- S4[Splitter]
-    S5[Relation] --- S6[Amendment/Version] --- S7[Compiler] --- S8[QC]
+    S1[Discovery Swarm: Catalog + Web Hunter + Heritage] --- S2[Fetcher]
+    S2 --- S3[Extractor + Historic OCR] --- S4[Splitter]
+    S4 --- S5[Relation & Citation] --- S6[Amendment/Version]
+    S6 --- S7[Compiler] --- S8[QC Tiers]
+    S9[Meta-Optimizer & Skill Evolution]
   end
   PG[(PostgreSQL 16)]
   RD[(Redis)]
   MN[(MinIO)]
   AZ[[Azure OpenAI]]
-  WEB[[Regulation source sites]]
+  WEB[[JDIH Network + Search Engines + Web Archives]]
   FE <--> API
   API <--> PG & RD
   SCHED --> ORCH --> SW
   SW --> LLMGW --> AZ
   SW --> PG & MN
+  SW <--> SKILLB
+  S9 --> PG & LLMGW
   S1 & S2 --> WEB
   SW -- events --> RD -- pubsub --> API
 ```
@@ -69,34 +75,48 @@ indonesia-law/
 │     ├─ core/                 # config, db, redis, events, ids, auth
 │     ├─ llm/                  # gateway.py, callbacks.py, pricing.py, schemas/
 │     ├─ prompts/              # preamble@v1.md + <id>@v<N>.md
-│     ├─ agents/               # base.py, scout/ fetcher/ extractor/ splitter/ relation/ amendment/ versioner/ compiler/ qc/
-│     ├─ graphs/               # document_pipeline.py, discovery.py, recompile.py
-│     ├─ scraping/             # ratelimit.py, robots.py, adapters/<source>.py
+│     ├─ evolution/            # optimizer.py, skill_bank.py, reflection.py, benchmark.py
+│     ├─ agents/               # base.py, scout/ (catalog, search_hunter, heritage), fetcher/ extractor/ splitter/ relation/ amendment/ versioner/ compiler/ qc/ optimizer/
+│     ├─ graphs/               # document_pipeline.py, discovery.py, recompile.py, evolution.py
+│     ├─ scraping/             # ratelimit.py, robots.py, search_engine.py, adapters/<source>.py
 │     ├─ verify/               # verbatim.py (deterministic)
 │     ├─ workers/  scheduler/  tests/
 ├─ frontend/
 │  └─ src/
 │     ├─ app/                  # shell, router, providers
 │     ├─ design/               # tokens, base components (Button, Badge, Tree, …)
-│     ├─ features/             # search, viewer, review, office, dashboard, logs, control
+│     ├─ features/             # search, viewer, review, office, dashboard, coverage1945, evolution, logs, control
 │     └─ lib/                  # api, ws, store, i18n
 └─ ops/                        # prometheus, grafana, backup scripts
 ```
 
 ## 4. Pipelines
 
-**Document pipeline (LangGraph):** Discovered → Fetch → Extract (+ line numbers) → Splitter (pointers) → Slice → Verbatim Verifier (fail → retry with feedback; fail N times → Review) → Node QC → Relation → Amendment Analyzer → Version Builder → Compiler → Version QC + Relation QC → Display QC → Chief QC → Published / returned to the responsible stage.
+**Document pipeline (LangGraph):** Discovered → Fetch → Extract (+ line numbers & historic spelling check) → Splitter (pointers) → Slice → Verbatim Verifier (fail → retry with feedback; fail N times → Review) → Node QC → Relation → Amendment Analyzer → Version Builder → Compiler → Version QC + Relation QC → Display QC → Chief QC → Published / returned to the responsible stage.
 
 Document status: `discovered → fetched → extracted → split → verified → related → versioned → compiled → qc_passed → published` (+ `needs_review`, `failed`, `paused`). Every transition = event + checkpoint.
 
-**Discovery pipeline:** Scout per source adapter → metadata → dedup (`jenis|nomor|tahun|instansi`) → fetch queue. Auto mode schedules incremental discovery and status re-checks.
+**Discovery Swarm pipeline:**
+1. *Chronological Master Registry:* Seeds expected series (LNRI/BNRI, UU, Perppu, PP, Perpres, Penpres 1945–present).
+2. *Open Web & Catalog Scouts:* Gathers regulatory listings and document URLs from across the open web (academic repositories, legal portals, digital libraries), prioritizing official `.go.id` adapters (BPK JDIH, JDIHN, Setneg/Setkab, Peraturan.go.id, MKRI/MARI).
+3. *Web Search Hunters:* Uses search engine queries (e.g. via SearXNG / search APIs) to discover unindexed or missing historical PDFs across all web domains, with search result ranking biased toward `.go.id`.
+4. *Heritage / Citation Scouts:* When relations cite an older instrument not yet in the DB (e.g. a 1950s emergency law cited in a 1970s law), a targeted open-web discovery task is queued.
+5. *Deduplication & Canonical Rule:* Identifies works across manifestations (`jenis|nomor|tahun|instansi`), prioritizes official `.go.id` gazette scans, and schedules fetches.
+
+**Prompt & Skill Evolution pipeline:**
+Triggered continuously by human review decisions (`review_decision`), QC rejections, and novel document styles:
+1. *Error & Feedback Mining:* Extracts input, failed output, correction/decision, and reason.
+2. *Reflection & Root Cause Analysis:* Categorizes root cause (e.g. historical spelling, non-standard numbering, novel amending formula).
+3. *Skill Bank Update:* Curates dynamic few-shot exemplars and tactical guidance into the vector-indexed `skill_bank`.
+4. *Prompt Patch Generation:* Formulates candidate `@v(N+1)` prompts for the affected agent.
+5. *Automated Golden-Set Regression Gate:* Runs candidate against the test suite (`eval:prompts`). If performance improves with zero regression on core invariants, flag as `candidate_approved` or auto-promote based on policy.
 
 **Recompile pipeline:** when a new amending instrument is parsed, re-run Amendment → Version → Compile **only** for affected nodes.
 
 ## 5. Orchestration and Swarms
 
 - The orchestrator decides *what* happens next per document; Celery workers execute *tasks*. Agents never call each other directly.
-- Queues: `q.scout`, `q.fetch`, `q.fetch.js`, `q.extract`, `q.split`, `q.relation`, `q.version`, `q.compile`, `q.qc.node|relation|version|display|chief`.
+- Queues: `q.scout.catalog`, `q.scout.search`, `q.scout.heritage`, `q.fetch`, `q.fetch.js`, `q.extract`, `q.split`, `q.relation`, `q.version`, `q.compile`, `q.qc.node|relation|version|display|chief`, `q.evolution`.
 - Limits: global tokens-per-minute bucket (Redis), per-domain concurrency, Azure quota (TPM/RPM) with 429 backoff.
 - Priority: instrument hierarchy and dependencies (parents before amendments/implementing rules), manual > automatic.
 - Idempotency: `task_key = sha256(work_id, stage, input_hash, prompt_version, model)`; a successful result is a cache hit on re-run.
@@ -120,11 +140,12 @@ Project `indonesia-law`, database `indonesia_law`.
 | `redis` | queues, pubsub, rate limiter | AOF on |
 | `minio` | object storage | console never exposed publicly |
 | `api`, `orchestrator`, `scheduler` | backend | |
-| `worker-scout`, `worker-fetch` | concurrency 1 | deliberately low (politeness) |
+| `worker-scout`, `worker-fetch` | concurrency 1 per domain | deliberately low (politeness); catalog, search & heritage queues |
 | `worker-extract`, `worker-split`, `worker-relation`, `worker-version`, `worker-qc` | LLM swarms | `--scale` as needed |
+| `worker-optimizer` | Skill & Prompt Evolution | processes reflection, candidate benchmarks, dynamic few-shot curation |
 | `worker-browser` | Playwright: `q.fetch.js` + Display QC | **required from Phase 4** (optional profile in the original plan) |
 | `frontend` | static build on Nginx | |
-| `prometheus`, `grafana`, `langfuse` | `observability` profile | optional |
+| `prometheus`, `grafana`, `langfuse`, `searxng` | `observability` & search helper profile | optional |
 
 A full YAML example is in [Appendix D](appendix/D-docker-compose.md); apply the renames and the table above.
 

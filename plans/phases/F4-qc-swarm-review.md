@@ -15,10 +15,12 @@
 - [ ] Heartbeat + lease, requeue on expiry, per-`work_id` locks, circuit breaker per stage/source.
 - [ ] Azure TPM/RPM bucket shared across workers.
 
-**Review queue**
+**Review queue & Continuous Self-Improvement**
 - [ ] `review_decision` model and endpoints (`06` §2), validation rules (reason required, manual transcription verified).
-- [ ] Decision effects: re-run the affected stage, update item status, events.
+- [ ] Decision effects: re-run the affected stage, update item status, events, and push learning payload to `q.evolution`.
+- [ ] Dynamic Skill Bank & Reflection Loop (`worker-optimizer`): RCA on review decisions / QC rejections, micro-skill vector storage in `skill_bank`, candidate prompt patch generation with automated `eval:prompts` benchmark testing.
 - [ ] Frontend `/tinjauan` list + `/tinjauan/:id` workspace per `07` §4 (evidence left, proposal right, decision bar), pointer pickers, OCR pass picker, candidate picker, keyboard flow, decision history.
+- [ ] Frontend `/kendali/evolusi`: prompt candidate comparison, evaluation delta, and one-click promotion/rollback controls.
 - [ ] Golden set grown to 50 documents, annotated through the review UI where possible.
 
 ## Exit Criteria
